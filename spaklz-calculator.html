@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>POP-UP: SPAKLZ 2026 WORLD TOUR — MD 計算器</title>
+<style>
+:root {
+  --bg: #06101E;
+  --surface: #0D1E35;
+  --surface2: #122540;
+  --card: #162B4A;
+  --border: rgba(80,160,255,0.18);
+  --border-hi: rgba(80,160,255,0.45);
+  --blue: #4DA8FF;
+  --blue-light: #85C4FF;
+  --blue-dim: #2266AA;
+  --blue-dark: #1A4A88;
+  --text: #D8ECFF;
+  --text-muted: #7FADD6;
+  --text-dim: #4A7BAA;
+  --gold: #FFD166;
+  --gold-dim: #B38A30;
+  --green: #4DFFA0;
+  --green-bg: rgba(30,80,55,0.6);
+  --amber: #FFA84D;
+  --amber-bg: rgba(80,50,20,0.6);
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'Helvetica Neue', 'Arial', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  background-image:
+    radial-gradient(ellipse 60% 40% at 20% 0%, rgba(30,80,180,0.22) 0%, transparent 60%),
+    radial-gradient(ellipse 40% 50% at 85% 100%, rgba(10,40,120,0.18) 0%, transparent 60%);
+}
+
+.page { max-width: 700px; margin: 0 auto; padding: 0 16px 80px; }
+
+/* HEADER */
+.header {
+  text-align: center;
+  padding: 48px 0 32px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 0;
+}
+.header-eyebrow {
+  font-size: 10px;
+  letter-spacing: 0.22em;
+  color: var(--blue);
+  text-transform: uppercase;
+  margin-bottom: 12px;
+}
+.header h1 {
+  font-size: 30px;
+  font-weight: 900;
+  color: #fff;
+  letter-spacing: 0.04em;
+  line-height: 1.15;
+  text-transform: uppercase;
+}
+.header-sub {
+  margin-top: 10px;
+  font-size: 12px;
+  color: var(--text-dim);
+  letter-spacing: 0.06em;
+}
+.rate-row {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  justify-content: center;
+  margin-top: 16px;
+  flex-wrap: wrap;
+}
+.rate-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 5px 14px;
+  font-size: 11px;
+  color: var(--text-muted);
+}
+.rate-pill input {
+  width: 48px;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid var(--blue-dim);
+  color: var(--blue-light);
+  font-size: 11px;
+  text-align: center;
+  outline: none;
+  padding: 0 2px;
+}
+.rate-pill input:focus { border-bottom-color: var(--blue); }
+
+/* STICKY BAR */
+.sticky {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: rgba(6,16,30,0.96);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+  padding: 10px 0;
+}
+.sticky-inner {
+  max-width: 700px;
+  margin: 0 auto;
+  padding: 0 16px;
+  display: flex;
+  gap: 8px;
+  align-items: stretch;
+  flex-wrap: wrap;
+}
+.sticky-block {
+  flex: 1;
+  min-width: 120px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 8px 14px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.sticky-label {
+  font-size: 9px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  margin-bottom: 2px;
+}
+.sticky-val {
+  font-size: 18px;
+  font-weight: 800;
+  color: #fff;
+  white-space: nowrap;
+}
+.sticky-sub {
+  font-size: 10px;
+  color: var(--text-muted);
+  margin-top: 1px;
+}
+
+/* Gift badges in sticky */
+.gift-badges {
+  display: flex;
+  gap: 8px;
+  align-items: stretch;
+}
+.gift-badge {
+  border-radius: 10px;
+  padding: 6px 12px;
+  text-align: center;
+  min-width: 70px;
+  border: 1px solid transparent;
+}
+.gift-badge .gb-label { font-size: 9px; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 2px; }
+.gift-badge .gb-val { font-size: 20px; font-weight: 900; line-height: 1; }
+.gift-badge .gb-sub { font-size: 9px; margin-top: 1px; }
+
+.gb-photo { background: var(--surface2); border-color: var(--border); }
+.gb-photo .gb-label { color: var(--text-dim); }
+.gb-photo .gb-val { color: var(--blue-light); }
+.gb-photo .gb-sub { color: var(--text-dim); }
+.gb-photo.active { background: rgba(30,70,140,0.5); border-color: var(--blue); }
+.gb-photo.active .gb-val { color: var(--blue); }
+
+.gb-card { background: var(--surface2); border-color: var(--border); }
+.gb-card .gb-label { color: var(--text-dim); }
+.gb-card .gb-val { color: var(--gold); }
+.gb-card .gb-sub { color: var(--text-dim); }
+.gb-card.active { background: rgba(100,70,10,0.4); border-color: var(--gold-dim); }
+.gb-card.active .gb-val { color: var(--gold); }
+
+/* SECTION */
+.section-head {
+  font-size: 9px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--blue);
+  padding: 28px 0 10px;
+}
+
+/* ITEM ROWS */
+.items { display: flex; flex-direction: column; gap: 5px; margin-bottom: 8px; }
+.item {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  align-items: center;
+  gap: 12px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 12px 14px;
+  transition: border-color 0.2s;
+}
+.item.active { border-color: var(--blue); }
+.item-info {}
+.item-name { font-size: 13px; color: var(--text); line-height: 1.3; }
+.item-sub { font-size: 10px; color: var(--text-dim); margin-top: 2px; }
+.item-price {
+  text-align: right;
+  min-width: 80px;
+  flex-shrink: 0;
+}
+.item-krw { font-size: 13px; color: var(--text-muted); }
+.item-usd { font-size: 10px; color: var(--text-dim); }
+.qty {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+.qbtn {
+  width: 28px; height: 28px;
+  border: 1px solid var(--border-hi);
+  border-radius: 7px;
+  background: var(--surface);
+  color: var(--blue-light);
+  font-size: 17px;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  line-height: 1;
+  transition: background 0.15s, border-color 0.15s;
+}
+.qbtn:hover { background: var(--blue-dark); border-color: var(--blue); }
+.qbtn:active { transform: scale(0.93); }
+.qval {
+  font-size: 14px;
+  font-weight: 700;
+  min-width: 20px;
+  text-align: center;
+  color: var(--text);
+}
+
+/* GIFT DETAIL PANEL */
+.gift-panel {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 18px 20px;
+  margin: 8px 0 28px;
+}
+.gift-panel-title {
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-bottom: 14px;
+  line-height: 1.6;
+}
+.gift-panel-title span { color: var(--blue-light); font-weight: 700; }
+
+.gift-rows { display: flex; flex-direction: column; gap: 16px; }
+.gift-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.gift-tier {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 12px 14px;
+  position: relative;
+  overflow: hidden;
+}
+.gift-tier.lit { border-color: var(--blue-dim); }
+.gift-tier-label { font-size: 9px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-dim); margin-bottom: 4px; }
+.gift-tier-main { font-size: 17px; font-weight: 800; color: var(--text); }
+.gift-tier-sub { font-size: 10px; color: var(--text-dim); margin-top: 2px; }
+.gift-tier-badge {
+  position: absolute; top: 8px; right: 10px;
+  font-size: 18px; font-weight: 900;
+}
+.tier-blue .gift-tier-badge { color: var(--blue); }
+.tier-gold .gift-tier-badge { color: var(--gold); }
+
+/* progress */
+.prog-wrap { margin-top: 10px; }
+.prog-label { font-size: 10px; color: var(--text-dim); margin-bottom: 4px; }
+.prog-track { height: 4px; background: var(--surface2); border-radius: 3px; overflow: hidden; }
+.prog-fill { height: 100%; border-radius: 3px; transition: width 0.4s cubic-bezier(.4,0,.2,1); }
+.prog-blue .prog-fill { background: var(--blue); }
+.prog-gold .prog-fill { background: var(--gold); }
+.prog-hint { font-size: 10px; color: var(--text-dim); margin-top: 4px; }
+
+/* RESET */
+.reset-btn {
+  width: 100%;
+  padding: 11px;
+  border: 1px solid var(--border-hi);
+  border-radius: 10px;
+  background: transparent;
+  color: var(--text-muted);
+  font-size: 12px;
+  letter-spacing: 0.07em;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+  margin-top: 8px;
+}
+.reset-btn:hover { background: var(--surface2); color: var(--text); }
+
+/* FOOTER */
+.footer {
+  text-align: center;
+  margin-top: 48px;
+  padding-top: 18px;
+  border-top: 1px solid var(--border);
+  font-size: 10px;
+  color: var(--text-dim);
+  letter-spacing: 0.05em;
+}
+
+@media (max-width: 480px) {
+  .header h1 { font-size: 21px; }
+  .sticky-inner { gap: 6px; }
+  .sticky-block { min-width: 90px; }
+  .sticky-val { font-size: 14px; }
+  .gift-badges { flex-wrap: wrap; }
+  .gift-row { grid-template-columns: 1fr; }
+  .item { grid-template-columns: 1fr auto; }
+  .item-price { display: none; }
+}
+</style>
+</head>
+<body>
+
+<!-- STICKY -->
+<div class="sticky" id="sticky">
+  <div class="sticky-inner">
+    <div class="sticky-block" style="min-width:110px;">
+      <div class="sticky-label">總計 KRW</div>
+      <div class="sticky-val" id="s-krw">₩0</div>
+      <div class="sticky-sub" id="s-usd">≈ $0.00</div>
+    </div>
+    <div class="sticky-block" style="min-width:110px;">
+      <div class="sticky-label">TWD <span style="color:var(--text-dim);font-size:9px;">$1=NT$<input id="r-twd" type="number" value="32.5" step="0.1" min="0.1" style="width:36px;background:transparent;border:none;border-bottom:1px solid var(--blue-dim);color:var(--blue-light);font-size:10px;text-align:center;outline:none;" oninput="render()"></span></div>
+      <div class="sticky-val"><span style="font-size:13px;font-weight:400;color:var(--text-muted);">NT$</span><span id="s-twd">0</span></div>
+    </div>
+    <div class="gift-badges">
+      <div class="gift-badge gb-photo" id="b-photo">
+        <div class="gb-label">相卡</div>
+        <div class="gb-val" id="b-photo-val">0</div>
+        <div class="gb-sub">每₩5萬</div>
+      </div>
+      <div class="gift-badge gb-card" id="b-card">
+        <div class="gb-label">小卡+透卡</div>
+        <div class="gb-val" id="b-card-val">0</div>
+        <div class="gb-sub">每₩10萬</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="page">
+  <div class="header">
+    <div class="header-eyebrow">MD 購買計算器</div>
+    <h1>Pop-up: Spaklz 2026<br>World Tour</h1>
+    <div class="header-sub">選擇商品數量，即時換算金額與滿額特典</div>
+    <div class="rate-row">
+      <div class="rate-pill">
+        匯率參考：₩<input id="r-krw-unit" type="number" value="5000" step="100" min="1" oninput="render()">
+        = $<input id="r-usd-unit" type="number" value="3.37" step="0.01" min="0.01" oninput="render()"> USD
+      </div>
+    </div>
+  </div>
+
+  <div id="product-area"></div>
+
+  <div class="section-head">滿額贈</div>
+  <div class="gift-panel">
+    <div class="gift-panel-title">
+      🎁 每滿 <span>₩50,000</span> 贈 <span>1 張相卡</span>（無上限）<br>
+      🎁 每滿 <span>₩100,000</span> 贈 <span>1 張小卡 + 1 張透卡</span>（無上限）
+    </div>
+    <div class="gift-rows">
+      <div class="gift-row">
+        <div class="gift-tier tier-blue" id="gt-photo-have">
+          <div class="gift-tier-label">已獲得相卡</div>
+          <div class="gift-tier-main" id="gt-ph-main">0 張</div>
+          <div class="gift-tier-sub" id="gt-ph-sub">消費 ₩0</div>
+          <div class="gift-tier-badge" id="gt-ph-badge">—</div>
+        </div>
+        <div class="gift-tier tier-blue" id="gt-photo-next">
+          <div class="gift-tier-label">距下一張相卡</div>
+          <div class="gift-tier-main" id="gt-ph-next-amt">₩50,000</div>
+          <div class="gift-tier-sub" id="gt-ph-next-usd">≈ $33.70</div>
+        </div>
+      </div>
+      <div class="prog-wrap prog-blue">
+        <div class="prog-label" id="prog-photo-label">₩0 / ₩50,000</div>
+        <div class="prog-track"><div class="prog-fill" id="prog-photo" style="width:0%"></div></div>
+        <div class="prog-hint" id="prog-photo-hint">距第 1 張相卡還差 ₩50,000</div>
+      </div>
+
+      <div style="border-top:1px solid var(--border);margin:0 -20px;"></div>
+
+      <div class="gift-row">
+        <div class="gift-tier tier-gold" id="gt-card-have">
+          <div class="gift-tier-label">已獲得小卡+透卡</div>
+          <div class="gift-tier-main" id="gt-cd-main">0 組</div>
+          <div class="gift-tier-sub" id="gt-cd-sub">消費 ₩0</div>
+          <div class="gift-tier-badge" id="gt-cd-badge">—</div>
+        </div>
+        <div class="gift-tier tier-gold" id="gt-card-next">
+          <div class="gift-tier-label">距下一組</div>
+          <div class="gift-tier-main" id="gt-cd-next-amt">₩100,000</div>
+          <div class="gift-tier-sub" id="gt-cd-next-usd">≈ $67.40</div>
+        </div>
+      </div>
+      <div class="prog-wrap prog-gold">
+        <div class="prog-label" id="prog-card-label">₩0 / ₩100,000</div>
+        <div class="prog-track"><div class="prog-fill" id="prog-card" style="width:0%"></div></div>
+        <div class="prog-hint" id="prog-card-hint">距第 1 組小卡+透卡還差 ₩100,000</div>
+      </div>
+    </div>
+  </div>
+
+  <button class="reset-btn" onclick="resetAll()">↺ 重置所有數量</button>
+
+  <div class="footer">價格以活動公告為準・匯率僅供參考・本頁不含限定及非賣品</div>
+</div>
+
+<script>
+const PRODUCTS = [
+  // === IMG_0936: Spaklz MD List ===
+  { name: "아크릴 스탠드", sub: "壓克力立牌 [28종] 各 — 랜덤", price: 15000, limit: 10, tag: "" },
+  { name: "컬렉션 포토카드 A", sub: "收藏小卡 A · 14종중 랜덤 3장", price: 5000, limit: 20, tag: "" },
+  { name: "컬렉션 포토카드 B", sub: "收藏小卡 B · 14종중 랜덤 3장", price: 5000, limit: 20, tag: "" },
+  { name: "AR STAR 캔뱃지 A", sub: "AR STAR 徽章 A · 14종중 랜덤 1종", price: 5000, limit: 20, tag: "" },
+  { name: "AR STAR 캔뱃지 B", sub: "AR STAR 徽章 B · 14종중 랜덤 1종", price: 5000, limit: 20, tag: "" },
+  { name: "렌티큘러 티켓 A", sub: "Lenticular 票 A · 14종중 랜덤 1장", price: 5000, limit: 20, tag: "" },
+  { name: "렌티큘러 티켓 B", sub: "Lenticular 票 B · 14종중 랜덤 1장", price: 5000, limit: 20, tag: "" },
+  { name: "쇼케이스 키트", sub: "Showcase Kit [14종] · 서울 팝업 한정", price: 36000, limit: 10, tag: "서울限定" },
+
+  // === IMG_0933 ===
+  { name: "NFC 미니 CD 키링", sub: "NFC 迷你 CD 鑰匙圈 [14종] 各", price: 14500, limit: 10, tag: "" },
+  { name: "직캠 스탠드", sub: "直拍立牌 [28종] 各", price: 12500, limit: 10, tag: "" },
+  { name: "콘서트 티셔츠 & 포토카드 14종 세트", sub: "演唱會T恤＋포토카드 14종 세트", price: 47000, limit: 5, tag: "" },
+  { name: "직캠 엽서 A", sub: "直拍明信片 A · 14종중 랜덤 1종", price: 5500, limit: 20, tag: "" },
+  { name: "직캠 엽서 B", sub: "直拍明信片 B · 14종중 랜덤 1종", price: 5500, limit: 20, tag: "" },
+  { name: "크로스오버 비하인드 스냅팩", sub: "Crossover Behind Snap Pack · 14종중 랜덤 1종", price: 5000, limit: 20, tag: "" },
+  { name: "크로스오버 아크릴 스탠드", sub: "Crossover 壓克力立牌 [14종] 各", price: 13000, limit: 5, tag: "" },
+  { name: "스핀 아크릴 스탠드", sub: "Spin 壓克力立牌 [14종] 各", price: 13000, limit: 10, tag: "" },
+
+  // === IMG_0932 ===
+  { name: "슬로건", sub: "應援毛巾 [14종] 各", price: 16000, limit: 5, tag: "" },
+  { name: "뽀시래기 미니어처 키링 A", sub: "Q版鑰匙圈 A · 14종중 랜덤 1종", price: 7500, limit: 20, tag: "" },
+  { name: "뽀시래기 미니어처 키링 B", sub: "Q版鑰匙圈 B · 14종중 랜덤 1종", price: 7500, limit: 20, tag: "" },
+  { name: "뽀시래기 컬렉션 미니 스탠드 A", sub: "Q版迷你立牌 A · 14종중 랜덤 1종", price: 4200, limit: 20, tag: "" },
+  { name: "뽀시래기 컬렉션 미니 스탠드 B", sub: "Q版迷你立牌 B · 14종중 랜덤 1종", price: 4200, limit: 20, tag: "" },
+  { name: "스테이지 미니 스탠드", sub: "Stage 迷你立牌 · 10종중 랜덤 1종", price: 5500, limit: 10, tag: "" },
+  { name: "뽀시래기 인형", sub: "Q版娃娃 [28종] 各", price: 19000, limit: 2, tag: "" },
+  { name: "PVC 파우치 키링", sub: "PVC 收納包鑰匙圈", price: 15000, limit: 5, tag: "" },
+  { name: "응원봉 플러시 키링", sub: "應援棒玩偶鑰匙圈", price: 14000, limit: 10, tag: "" },
+  { name: "뽀시래기 인형 콘서트 티셔츠 세트", sub: "Q版娃娃演唱會T恤組", price: 9000, limit: 10, tag: "" },
+  { name: "뽀시래기 의상팩 A", sub: "Q版娃娃服裝包 A", price: 18000, limit: 5, tag: "" },
+  { name: "뽀시래기 의상팩 B", sub: "Q版娃娃服裝包 B", price: 18000, limit: 5, tag: "" },
+  { name: "뽀시래기 의상팩 C", sub: "Q版娃娃服裝包 C", price: 18000, limit: 5, tag: "" },
+  { name: "뽀시래기 의상팩 D", sub: "Q版娃娃服裝包 D", price: 23000, limit: 5, tag: "" },
+
+  // === IMG_0931 ===
+  { name: "A3 단체 포스터 A", sub: "A3 團體海報 A · 성수 팝업 한정", price: 15000, limit: 10, tag: "성수限定" },
+  { name: "A3 단체 포스터 B", sub: "A3 團體海報 B · 성수 팝업 한정", price: 15000, limit: 10, tag: "성수限定" },
+  { name: "시즌그리팅", sub: "Season Greeting", price: 60000, limit: 5, tag: "" },
+  { name: "컬렉션 포토카드 (신규 4종)", sub: "收藏小卡 新款 · 랜덤 1종", price: 5000, limit: 20, tag: "NEW" },
+  { name: "컬렉션 포토카드 (기존 9종)", sub: "收藏小卡 舊款 · 랜덤 1종", price: 5000, limit: 20, tag: "" },
+];
+
+const SECTIONS = [
+  { label: "Spaklz MD List — 굿즈리스트", from: 0, to: 7 },
+  { label: "Live & Crossover", from: 8, to: 15 },
+  { label: "뽀시래기 & 의상", from: 16, to: 29 },
+  { label: "팝업 한정 & 시즌그리팅", from: 30, to: 34 },
+];
+
+const T1 = 50000;
+const T2 = 100000;
+const qtys = new Array(PRODUCTS.length).fill(0);
+
+function getKrwRate() {
+  const unit = parseFloat(document.getElementById("r-krw-unit").value) || 5000;
+  const usd = parseFloat(document.getElementById("r-usd-unit").value) || 3.37;
+  return usd / unit;
+}
+function getTwdRate() { return parseFloat(document.getElementById("r-twd").value) || 32.5; }
+function krw(n) { return "₩" + Math.round(n).toLocaleString(); }
+function usd(n) { return "$" + (n * getKrwRate()).toFixed(2); }
+function twd(n) { return Math.round(n * getKrwRate() * getTwdRate()).toLocaleString(); }
+
+function buildProducts() {
+  const area = document.getElementById("product-area");
+  area.innerHTML = "";
+  SECTIONS.forEach(sec => {
+    const head = document.createElement("div");
+    head.className = "section-head";
+    head.textContent = sec.label;
+    area.appendChild(head);
+
+    const list = document.createElement("div");
+    list.className = "items";
+
+    for (let i = sec.from; i <= Math.min(sec.to, PRODUCTS.length - 1); i++) {
+      const p = PRODUCTS[i];
+      const row = document.createElement("div");
+      row.className = "item" + (qtys[i] > 0 ? " active" : "");
+      row.id = "item-" + i;
+
+      let tagHtml = "";
+      if (p.tag) tagHtml = `<span style="display:inline-block;margin-left:6px;font-size:9px;background:var(--blue-dark);color:var(--blue-light);border-radius:4px;padding:1px 5px;vertical-align:middle;">${p.tag}</span>`;
+
+      row.innerHTML = `
+        <div class="item-info">
+          <div class="item-name">${p.name}${tagHtml}</div>
+          <div class="item-sub">${p.sub}${p.limit ? ` · 限購${p.limit}` : ""}</div>
+        </div>
+        <div class="item-price">
+          <div class="item-krw">${krw(p.price)}</div>
+          <div class="item-usd">${usd(p.price)}</div>
+        </div>
+        <div class="qty">
+          <button class="qbtn" onclick="change(${i},-1)" aria-label="減">−</button>
+          <span class="qval" id="q-${i}">${qtys[i]}</span>
+          <button class="qbtn" onclick="change(${i},1)" aria-label="增">+</button>
+        </div>`;
+      list.appendChild(row);
+    }
+    area.appendChild(list);
+  });
+}
+
+function change(i, d) {
+  const p = PRODUCTS[i];
+  qtys[i] = Math.max(0, Math.min(p.limit || 99, qtys[i] + d));
+  const el = document.getElementById("q-" + i);
+  if (el) el.textContent = qtys[i];
+  const row = document.getElementById("item-" + i);
+  if (row) row.classList.toggle("active", qtys[i] > 0);
+  render();
+}
+
+function resetAll() {
+  qtys.fill(0);
+  buildProducts();
+  render();
+}
+
+function render() {
+  const total = PRODUCTS.reduce((s, p, i) => s + p.price * qtys[i], 0);
+
+  document.getElementById("s-krw").textContent = krw(total);
+  document.getElementById("s-usd").textContent = "≈ " + usd(total);
+  document.getElementById("s-twd").textContent = twd(total);
+
+  // Tier 1: photo card every 50k
+  const photos = Math.floor(total / T1);
+  const rem1 = total % T1;
+  const toNext1 = T1 - rem1;
+  const pct1 = (rem1 / T1 * 100).toFixed(1);
+
+  document.getElementById("b-photo-val").textContent = photos;
+  document.getElementById("b-photo").className = "gift-badge gb-photo" + (photos > 0 ? " active" : "");
+
+  document.getElementById("gt-ph-main").textContent = photos + " 張";
+  document.getElementById("gt-ph-sub").textContent = "消費 " + krw(total);
+  document.getElementById("gt-ph-badge").textContent = photos > 0 ? "×" + photos : "—";
+  document.getElementById("gt-ph-next-amt").textContent = krw(toNext1);
+  document.getElementById("gt-ph-next-usd").textContent = "≈ " + usd(toNext1);
+  document.getElementById("prog-photo").style.width = pct1 + "%";
+  document.getElementById("prog-photo-label").textContent = krw(rem1) + " / ₩50,000";
+  document.getElementById("prog-photo-hint").textContent =
+    photos > 0
+      ? `已獲 ${photos} 張相卡！距下一張還差 ${krw(toNext1)}`
+      : `距第 1 張相卡還差 ${krw(toNext1)}（${usd(toNext1)}）`;
+
+  // Tier 2: small card + clear card every 100k
+  const cardSets = Math.floor(total / T2);
+  const rem2 = total % T2;
+  const toNext2 = T2 - rem2;
+  const pct2 = (rem2 / T2 * 100).toFixed(1);
+
+  document.getElementById("b-card-val").textContent = cardSets;
+  document.getElementById("b-card").className = "gift-badge gb-card" + (cardSets > 0 ? " active" : "");
+
+  document.getElementById("gt-cd-main").textContent = cardSets + " 組";
+  document.getElementById("gt-cd-sub").textContent = "消費 " + krw(total);
+  document.getElementById("gt-cd-badge").textContent = cardSets > 0 ? "×" + cardSets : "—";
+  document.getElementById("gt-cd-next-amt").textContent = krw(toNext2);
+  document.getElementById("gt-cd-next-usd").textContent = "≈ " + usd(toNext2);
+  document.getElementById("prog-card").style.width = pct2 + "%";
+  document.getElementById("prog-card-label").textContent = krw(rem2) + " / ₩100,000";
+  document.getElementById("prog-card-hint").textContent =
+    cardSets > 0
+      ? `已獲 ${cardSets} 組小卡+透卡！距下一組還差 ${krw(toNext2)}`
+      : `距第 1 組小卡+透卡還差 ${krw(toNext2)}（${usd(toNext2)}）`;
+}
+
+buildProducts();
+render();
+</script>
+</body>
+</html>
